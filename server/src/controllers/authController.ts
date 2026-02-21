@@ -1,12 +1,18 @@
 import { Request, Response } from "express";
-import { User } from "../types";
-import db from "../db/db";
+import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
+import db from "../db/db";
+import { User } from "../types";
 
 class AuthController {
   async register(req: Request<{}, {}, User>, res: Response) {
     try {
       const { email, password, name, surname } = req.body;
+      const result = validationResult(req);
+
+      if (!result.isEmpty()) {
+        return res.status(403).send(result.array());
+      }
 
       const hashedPass = bcrypt.hashSync(password, 7);
 
@@ -21,10 +27,10 @@ class AuthController {
       );
 
       if (isUser.rowCount === 0) {
-        return res.status(403).send(`User with email ${email} already esists`);
+        return res.status(403).send({ msg: `User with email ${email} already esists` });
       }
 
-      res.sendStatus(200);
+      res.status(200).send({ data: isUser, msg: "User has been registered" });
     } catch (error) {
       res.sendStatus(500);
     }
