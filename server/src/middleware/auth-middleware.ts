@@ -14,7 +14,7 @@ function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
     if (!token) return res.sendStatus(401);
 
     jwt.verify(token, process.env.ACCESS_TOKEN as string, (err, data) => {
-      if (err) return res.sendStatus(401);
+      if (err) return res.sendStatus(403);
       req.user = data;
       next();
     });

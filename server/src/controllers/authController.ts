@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import db from "../db/db";
+import tokenService from "../services/token-service";
 import { User } from "../types";
 
 class AuthController {
@@ -59,36 +59,16 @@ class AuthController {
         return res.status(403).send({ msg: "Invalid password" });
       }
 
-      // Token generating
-      const accessToken = jwt.sign(
-        { id: user.id, email },
-        process.env.ACCESS_TOKEN as string,
-        {
-          expiresIn: "1m",
-        },
-      );
-      const refreshToken = jwt.sign(
-        { id: user.id, email },
-        process.env.REFRESH_TOKEN as string,
-        {
-          expiresIn: "1d",
-        },
-      );
+      const userPayload: Partial<User> = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      };
 
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-      });
+      const { accessToken, refreshToken } = tokenService.generateTokens(userPayload);
 
-      res.status(200).send({
-        accessToken,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          surname: user.surname,
-        },
-      });
+      res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+      res.status(200).send({ accessToken, user: userPayload });
     } catch (error) {
       res.sendStatus(500);
     }
