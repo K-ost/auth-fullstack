@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import db from "../db/db";
 
 type TokensReturn = {
   accessToken: string;
@@ -7,6 +8,7 @@ type TokensReturn = {
 
 interface ITokenService {
   generateTokens<T extends object>(payload: T): TokensReturn;
+  saveToken(token: string, userId: number): Promise<void>;
 }
 
 class TokenService implements ITokenService {
@@ -20,6 +22,21 @@ class TokenService implements ITokenService {
     });
 
     return { accessToken, refreshToken };
+  }
+
+  async saveToken(refreshToken: string, userId: number): Promise<void> {
+    await db.query(
+      `
+      INSERT INTO tokens (token, userId)
+      VALUES ($1, $2)
+      RETURNING token, userId
+    `,
+      [refreshToken, userId],
+    );
+  }
+
+  async deleteTokenFromDb(refreshToken: string): Promise<void> {
+    await db.query("DELETE FROM tokens WHERE token = $1", [refreshToken]);
   }
 }
 

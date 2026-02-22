@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import db from "../db/db";
 import tokenService from "../services/token-service";
@@ -67,8 +68,23 @@ class AuthController {
 
       const { accessToken, refreshToken } = tokenService.generateTokens(userPayload);
 
+      await tokenService.saveToken(refreshToken, user.id);
+
       res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
       res.status(200).send({ accessToken, user: userPayload });
+    } catch (error) {
+      res.sendStatus(500);
+    }
+  }
+
+  async logout(req: Request, res: Response) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) return res.sendStatus(401);
+
+      await tokenService.deleteTokenFromDb(refreshToken);
+      res.clearCookie("refreshToken");
+      res.sendStatus(200);
     } catch (error) {
       res.sendStatus(500);
     }
