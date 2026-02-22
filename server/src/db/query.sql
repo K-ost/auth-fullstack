@@ -5,3 +5,10 @@ CREATE TABLE users(
   name VARCHAR(255),
   surname VARCHAR(255)
 );
+
+CREATE TABLE tokens(
+  id SERIAL PRIMARY KEY,
+  token VARCHAR(255) NOT NULL,
+  userId INTEGER,
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
