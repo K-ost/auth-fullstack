@@ -7,8 +7,7 @@ CREATE TABLE users(
 );
 
 CREATE TABLE tokens(
-  id SERIAL PRIMARY KEY,
-  token VARCHAR(255) NOT NULL,
+  token VARCHAR(255) NOT NULL UNIQUE,
   userId INTEGER,
   FOREIGN KEY (userId) REFERENCES users(id)
 );

@@ -70,7 +70,11 @@ class AuthController {
 
       await tokenService.saveToken(refreshToken, user.id);
 
-      res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+      });
+
       res.status(200).send({ accessToken, user: userPayload });
     } catch (error) {
       res.sendStatus(500);
@@ -79,11 +83,12 @@ class AuthController {
 
   async logout(req: Request, res: Response) {
     try {
-      const refreshToken = req.cookies.refreshToken;
+      const refreshToken = req.cookies["refreshToken"];
       if (!refreshToken) return res.sendStatus(401);
 
       await tokenService.deleteTokenFromDb(refreshToken);
-      res.clearCookie("refreshToken");
+
+      res.clearCookie("refreshToken", { httpOnly: true });
       res.sendStatus(200);
     } catch (error) {
       res.sendStatus(500);
