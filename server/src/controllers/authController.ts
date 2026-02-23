@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import db from "../db/db";
 import tokenService from "../services/token-service";
 import { User } from "../types";
+import OPTIONS from "../options";
 
 class AuthController {
   async register(req: Request<{}, {}, User>, res: Response) {
@@ -72,7 +73,7 @@ class AuthController {
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        maxAge: 1 * 24 * 60 * 60 * 1000,
+        maxAge: OPTIONS.refreshTokenCookie,
       });
 
       res.status(200).send({ accessToken, user: userPayload });
@@ -90,6 +91,44 @@ class AuthController {
 
       res.clearCookie("refreshToken", { httpOnly: true });
       res.sendStatus(200);
+    } catch (error) {
+      res.sendStatus(500);
+    }
+  }
+
+  async refresh(req: Request, res: Response) {
+    try {
+      const refreshToken = req.cookies["refreshToken"];
+      if (!refreshToken) return res.sendStatus(401);
+
+      const sessionTokens = await db.query("SELECT * FROM tokens WHERE token = $1", [
+        refreshToken,
+      ]);
+
+      if (sessionTokens.rowCount === 0) return res.sendStatus(401);
+
+      try {
+        const isTokenValid = jwt.verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN as string,
+        ) as object;
+
+        const { id, email, name } = isTokenValid as Partial<User>;
+        const newPayload: Partial<User> = { id, email, name };
+        const { accessToken, refreshToken: newRefreshToken } =
+          tokenService.generateTokens(newPayload);
+
+        await tokenService.deleteTokenFromDb(refreshToken);
+        await tokenService.saveToken(newRefreshToken, newPayload.id!);
+
+        res.cookie("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          maxAge: OPTIONS.refreshTokenCookie,
+        });
+        res.status(200).send({ accessToken, user: newPayload });
+      } catch (error) {
+        res.status(401).send("Session expired");
+      }
     } catch (error) {
       res.sendStatus(500);
     }
