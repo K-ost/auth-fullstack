@@ -4,8 +4,9 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import db from "../db/db";
 import tokenService from "../services/token-service";
-import { User } from "../types";
+import UserDto from "../services/user-dto";
 import OPTIONS from "../options";
+import { User } from "../types";
 
 class AuthController {
   async register(req: Request<{}, {}, User>, res: Response) {
@@ -56,19 +57,10 @@ class AuthController {
       const user: User = isUser.rows[0];
 
       const isPassValid = bcrypt.compareSync(password, user.password);
+      if (!isPassValid) return res.status(403).send({ msg: "Invalid password" });
 
-      if (!isPassValid) {
-        return res.status(403).send({ msg: "Invalid password" });
-      }
-
-      const userPayload: Partial<User> = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      };
-
-      const { accessToken, refreshToken } = tokenService.generateTokens(userPayload);
-
+      const userDTO = new UserDto(user);
+      const { accessToken, refreshToken } = tokenService.generateTokens(userDTO);
       await tokenService.saveToken(refreshToken, user.id);
 
       res.cookie("refreshToken", refreshToken, {
@@ -76,7 +68,7 @@ class AuthController {
         maxAge: OPTIONS.refreshTokenCookie,
       });
 
-      res.status(200).send({ accessToken, user: userPayload });
+      res.status(200).send({ accessToken, user: userDTO });
     } catch (error) {
       res.sendStatus(500);
     }
@@ -90,7 +82,7 @@ class AuthController {
       await tokenService.deleteTokenFromDb(refreshToken);
 
       res.clearCookie("refreshToken", { httpOnly: true });
-      res.sendStatus(200);
+      res.status(200).send("Logout");
     } catch (error) {
       res.sendStatus(500);
     }
@@ -104,28 +96,26 @@ class AuthController {
       const sessionTokens = await db.query("SELECT * FROM tokens WHERE token = $1", [
         refreshToken,
       ]);
-
       if (sessionTokens.rowCount === 0) return res.sendStatus(401);
 
       try {
         const isTokenValid = jwt.verify(
           refreshToken,
           process.env.REFRESH_TOKEN as string,
-        ) as object;
+        );
 
-        const { id, email, name } = isTokenValid as Partial<User>;
-        const newPayload: Partial<User> = { id, email, name };
+        const userDTO = new UserDto(isTokenValid as User);
         const { accessToken, refreshToken: newRefreshToken } =
-          tokenService.generateTokens(newPayload);
+          tokenService.generateTokens(userDTO);
 
         await tokenService.deleteTokenFromDb(refreshToken);
-        await tokenService.saveToken(newRefreshToken, newPayload.id!);
+        await tokenService.saveToken(newRefreshToken, userDTO.id);
 
         res.cookie("refreshToken", newRefreshToken, {
           httpOnly: true,
           maxAge: OPTIONS.refreshTokenCookie,
         });
-        res.status(200).send({ accessToken, user: newPayload });
+        res.status(200).send({ accessToken, user: userDTO });
       } catch (error) {
         res.status(401).send("Session expired");
       }

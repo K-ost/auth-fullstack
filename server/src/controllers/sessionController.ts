@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import db from "../db/db";
 
 class SessionController {
-  async getTokens(req: Request, res: Response) {
+  async getTokens(__: Request, res: Response) {
     try {
       const tokens = await db.query("SELECT * FROM tokens");
       res.send(tokens.rows);
