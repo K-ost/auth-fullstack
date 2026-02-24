@@ -1,19 +1,35 @@
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
+import Button from "./ui/Button";
+import TextInput from "./ui/TextInput";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleForm = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log({ email, password });
+  };
 
   return (
-    <>
-      <h1 className="text-3xl font-bold">Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+    <div className="mx-auto max-w-175 my-4 flex">
+      <div className="border border-gray-300 rounded-xl p-6">
+        <form onSubmit={handleForm}>
+          <h1 className="text-2xl font-bold mb-4">Login</h1>
+          <div className="mb-4">
+            <TextInput onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" />
+          </div>
+          <div className="mb-4">
+            <TextInput
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+            />
+          </div>
+          <Button>Login</Button>
+        </form>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    </div>
   );
 }
 
