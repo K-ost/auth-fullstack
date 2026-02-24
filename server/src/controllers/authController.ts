@@ -33,7 +33,7 @@ class AuthController {
         return res.status(403).send({ msg: `User with email ${email} already esists` });
       }
 
-      res.status(201).send({ data: isUser, msg: "User has been registered" });
+      res.status(201).send({ data: isUser.rows, msg: "User has been registered" });
     } catch (error) {
       res.sendStatus(500);
     }

@@ -10,6 +10,14 @@ export const loginCheck = [
 
 export const registerCheck = [
   ...loginCheck,
+  check("name")
+    .trim()
+    .isLength({ min: 3 })
+    .withMessage("Name has to be at least 3 characters long"),
+  check("surname")
+    .trim()
+    .isLength({ min: 3 })
+    .withMessage("Name has to be at least 3 characters long"),
   check("confirmPassword")
     .custom((value, { req }) => {
       return value === req.body.password;
