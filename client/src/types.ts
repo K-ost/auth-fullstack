@@ -9,15 +9,9 @@ export type User = {
   confirmPassword?: string;
 };
 
-export type ErrorField = {
-  msg: string;
-  path: string;
-};
-
-export type ErrorResponse<T> = {
+export type ErrorResponse = {
   status: number;
   message: string;
-  data: T;
 };
 
-export type AuthSuccessResponse = { msg: string };
+export type AuthResponse = { msg: string };

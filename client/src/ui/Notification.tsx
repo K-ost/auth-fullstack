@@ -8,7 +8,7 @@ const Notification: FC<NotificationProps> = ({ message }) => {
   return (
     <div
       aria-label={`Notification: ${message}`}
-      className="bg-amber-400 text-black rounded-xl py-3 px-5"
+      className="fixed right-4 bottom-4 bg-amber-400 text-black rounded-xl py-3 px-5"
     >
       {message}
     </div>

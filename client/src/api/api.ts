@@ -16,8 +16,7 @@ export async function mutateData<T, K>(
     throw {
       status: response.status,
       message: data.msg || "Request failed",
-      data,
-    } as ErrorResponse<T>;
+    } as ErrorResponse;
   }
 
   return data;

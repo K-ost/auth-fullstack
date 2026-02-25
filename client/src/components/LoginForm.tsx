@@ -1,18 +1,26 @@
-import { useState, type JSX, type SubmitEvent } from "react";
+import { type JSX } from "react";
 import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
-import Notification from "../ui/Notification";
 import useMutateData from "../hooks/useMutateData";
 import { ApiUrl } from "../constants";
-import type { AuthSuccessResponse, ErrorField, ErrorResponse, User } from "../types";
+import type { AuthResponse, ErrorResponse, User } from "../types";
+import { useForm } from "react-hook-form";
+
+type FormData = {
+  email: string;
+  password: string;
+};
 
 const LoginForm = (): JSX.Element => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
   const { mutate, isPending } = useMutateData<
-    AuthSuccessResponse,
-    ErrorResponse<ErrorField[]>,
+    AuthResponse,
+    ErrorResponse,
     Pick<User, "email" | "password">
   >({
     keys: ["login"],
@@ -20,32 +28,28 @@ const LoginForm = (): JSX.Element => {
     url: `${ApiUrl}/login`,
   });
 
-  const handleForm = (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!email.length && !password.length) return;
-    mutate(
-      { email, password },
-      {
-        onError(error) {
-          console.error("Error", error.data[0].msg);
-        },
-        onSuccess(data) {
-          console.log("onSuccess", data);
-        },
+  const onSubmit = (data: FormData) => {
+    mutate(data, {
+      onError(error) {
+        console.error("Error", error);
       },
-    );
+      onSuccess(data) {
+        console.log("onSuccess", data);
+      },
+    });
   };
 
   return (
     <div className="border border-gray-300 rounded-xl p-6">
-      <form onSubmit={handleForm}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="text-2xl font-bold mb-4">Login</h1>
 
         <div className="mb-4">
           <TextInput
             aria-label="E-mail"
-            onChange={(e) => setEmail(e.target.value)}
             placeholder="E-mail"
+            {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
+            style={{ borderColor: errors.email ? "red" : "" }}
           />
         </div>
 
@@ -53,22 +57,17 @@ const LoginForm = (): JSX.Element => {
           <TextInput
             type="password"
             aria-label="Password"
-            onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
+            {...register("password", { required: true, minLength: 6 })}
+            style={{ borderColor: errors.password ? "red" : "" }}
           />
         </div>
 
         <div className="mb-6">
-          <Button
-            type="submit"
-            aria-label="Login button"
-            disabled={!email.length || !password.length}
-          >
+          <Button type="submit" aria-label="Login button">
             {isPending ? "Loading..." : "Login"}
           </Button>
         </div>
-
-        <Notification message="" />
       </form>
     </div>
   );
