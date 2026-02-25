@@ -1,3 +1,5 @@
+export type RestApiMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+
 export type User = {
   id: number;
   email: string;
