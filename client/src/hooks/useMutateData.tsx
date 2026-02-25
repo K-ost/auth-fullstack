@@ -7,11 +7,12 @@ type MutateProps = {
   method: RestApiMethod;
   url: string;
 };
-const useMutateData = <T,>(props: MutateProps) => {
+const useMutateData = <Data, Error, Vars>(props: MutateProps) => {
   const { keys, method, url } = props;
-  return useMutation({
-    mutationFn: (data: T) => mutateData(url, method, JSON.stringify(data)),
+  return useMutation<Data, Error, Vars>({
+    mutationFn: (data) => mutateData<Data, Vars>(url, method, data),
     mutationKey: keys,
+    retry: false,
   });
 };
 

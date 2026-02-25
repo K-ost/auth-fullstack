@@ -8,3 +8,16 @@ export type User = {
   surname: string;
   confirmPassword?: string;
 };
+
+export type ErrorField = {
+  msg: string;
+  path: string;
+};
+
+export type ErrorResponse<T> = {
+  status: number;
+  message: string;
+  data: T;
+};
+
+export type AuthSuccessResponse = { msg: string };

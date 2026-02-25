@@ -4,12 +4,17 @@ import Button from "../ui/Button";
 import Notification from "../ui/Notification";
 import useMutateData from "../hooks/useMutateData";
 import { ApiUrl } from "../constants";
+import type { AuthSuccessResponse, ErrorField, ErrorResponse, User } from "../types";
 
 const LoginForm = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { mutate, isPending } = useMutateData({
+  const { mutate, isPending } = useMutateData<
+    AuthSuccessResponse,
+    ErrorResponse<ErrorField[]>,
+    Pick<User, "email" | "password">
+  >({
     keys: ["login"],
     method: "POST",
     url: `${ApiUrl}/login`,
@@ -22,10 +27,10 @@ const LoginForm = (): JSX.Element => {
       { email, password },
       {
         onError(error) {
-          console.log(error);
+          console.error("Error", error.data[0].msg);
         },
         onSuccess(data) {
-          console.log(data);
+          console.log("onSuccess", data);
         },
       },
     );
@@ -52,13 +57,18 @@ const LoginForm = (): JSX.Element => {
             placeholder="Password"
           />
         </div>
+
         <div className="mb-6">
-          <Button type="submit" aria-label="Login button">
+          <Button
+            type="submit"
+            aria-label="Login button"
+            disabled={!email.length || !password.length}
+          >
             {isPending ? "Loading..." : "Login"}
           </Button>
         </div>
 
-        <Notification message="Message" />
+        <Notification message="" />
       </form>
     </div>
   );
