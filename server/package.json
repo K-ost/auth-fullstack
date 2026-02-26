@@ -13,7 +13,7 @@
     "client": "cd ../client && npm run dev",
     "server": "nodemon src/index.ts",
     "db": "brew services start postgresql",
-    "stopdb": "brew services stop postgresql",
+    "stop": "brew services stop postgresql",
     "dev": "concurrently \"nodemon src/index.ts\" \"npm run client\" \"npm run db\""
   },
   "dependencies": {
