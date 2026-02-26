@@ -6,6 +6,7 @@ import useMutateData from "../hooks/useMutateData";
 import useMessage from "../hooks/useMessage";
 import { ApiUrl } from "../constants";
 import type { AuthResponse, ErrorResponse, User } from "../types";
+import Wrapper from "../ui/Wrapper";
 
 type FormData = {
   email: string;
@@ -43,12 +44,11 @@ const LoginForm: FC = () => {
   };
 
   return (
-    <div className="border border-gray-300 rounded-xl p-6">
+    <Wrapper title="Login">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <h1 className="text-2xl font-bold mb-4">Login</h1>
-
         <div className="mb-4">
           <TextInput
+            type="email"
             aria-label="E-mail"
             placeholder="E-mail"
             {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
@@ -66,13 +66,11 @@ const LoginForm: FC = () => {
           />
         </div>
 
-        <div className="mb-6">
-          <Button type="submit" aria-label="Login button">
-            {isPending ? "Loading..." : "Login"}
-          </Button>
-        </div>
+        <Button type="submit" aria-label="Login button">
+          {isPending ? "Loading..." : "Login"}
+        </Button>
       </form>
-    </div>
+    </Wrapper>
   );
 };
 
