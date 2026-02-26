@@ -12,7 +12,9 @@
     "start": "ts-node src/index.ts",
     "client": "cd ../client && npm run dev",
     "server": "nodemon src/index.ts",
-    "dev": "concurrently \"nodemon src/index.ts\" \"npm run client\""
+    "db": "brew services start postgresql",
+    "stopdb": "brew services stop postgresql",
+    "dev": "concurrently \"nodemon src/index.ts\" \"npm run client\" \"npm run db\""
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
