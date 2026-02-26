@@ -1,17 +1,20 @@
-import { type JSX } from "react";
+import { type FC } from "react";
+import { useForm } from "react-hook-form";
 import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
 import useMutateData from "../hooks/useMutateData";
+import useMessage from "../hooks/useMessage";
 import { ApiUrl } from "../constants";
 import type { AuthResponse, ErrorResponse, User } from "../types";
-import { useForm } from "react-hook-form";
 
 type FormData = {
   email: string;
   password: string;
 };
 
-const LoginForm = (): JSX.Element => {
+const LoginForm: FC = () => {
+  const { setMessage } = useMessage();
+
   const {
     register,
     handleSubmit,
@@ -31,10 +34,10 @@ const LoginForm = (): JSX.Element => {
   const onSubmit = (data: FormData) => {
     mutate(data, {
       onError(error) {
-        console.error("Error", error);
+        setMessage(error.message);
       },
       onSuccess(data) {
-        console.log("onSuccess", data);
+        setMessage(data.msg);
       },
     });
   };
