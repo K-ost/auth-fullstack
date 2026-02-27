@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
 import useMutateData from "../hooks/useMutateData";
-import useMessage from "../hooks/useMessage";
 import { ApiUrl } from "../constants";
 import type { AuthResponse, ErrorResponse, User } from "../types";
 import Wrapper from "../ui/Wrapper";
+import { useMessage } from "../store/useMessage";
 
 type FormData = {
   email: string;
@@ -14,7 +14,7 @@ type FormData = {
 };
 
 const LoginForm: FC = () => {
-  const { setMessage } = useMessage();
+  const setMessage = useMessage((state) => state.setMessage);
 
   const {
     register,

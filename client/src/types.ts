@@ -15,8 +15,3 @@ export type ErrorResponse = {
 };
 
 export type AuthResponse = { msg: string };
-
-export type MessageContextType = {
-  message: string;
-  setMessage: React.Dispatch<React.SetStateAction<string>>;
-};

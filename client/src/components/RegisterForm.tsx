@@ -6,12 +6,12 @@ import Button from "../ui/Button";
 import type { AuthResponse, ErrorResponse, User } from "../types";
 import useMutateData from "../hooks/useMutateData";
 import { ApiUrl } from "../constants";
-import useMessage from "../hooks/useMessage";
+import { useMessage } from "../store/useMessage";
 
 type FormData = Omit<User, "id">;
 
 const RegisterForm: FC = () => {
-  const { setMessage } = useMessage();
+  const setMessage = useMessage((state) => state.setMessage);
 
   const {
     formState: { errors },
