@@ -2,11 +2,12 @@ import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useMessage } from "../store/useMessage";
 import useMutateData from "../hooks/useMutateData";
+import { useAuthStore } from "../store/useAuth";
 import Field from "../ui/Field";
 import Button from "../ui/Button";
 import Wrapper from "../ui/Wrapper";
 import { ApiUrl } from "../constants";
-import type { AuthResponse, ErrorResponse, User } from "../types";
+import type { LoginResponse, ErrorResponse, User } from "../types";
 
 type FormData = {
   email: string;
@@ -15,6 +16,7 @@ type FormData = {
 
 const LoginForm: FC = () => {
   const setMessage = useMessage((state) => state.setMessage);
+  const login = useAuthStore((state) => state.login);
 
   const {
     register,
@@ -23,7 +25,7 @@ const LoginForm: FC = () => {
   } = useForm<FormData>();
 
   const { mutate, isPending } = useMutateData<
-    AuthResponse,
+    LoginResponse,
     ErrorResponse,
     Pick<User, "email" | "password">
   >({
@@ -38,7 +40,7 @@ const LoginForm: FC = () => {
         setMessage(error.message);
       },
       onSuccess(data) {
-        setMessage(data.msg);
+        login(data.accessToken, data.user);
       },
     });
   };

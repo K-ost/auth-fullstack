@@ -8,7 +8,7 @@ const authRouter = Router();
 authRouter.post("/register", registerCheck, authController.register);
 authRouter.post("/login", loginCheck, authController.login);
 authRouter.post("/logout", authController.logout);
-authRouter.get("/refresh", loginCheck, authController.refresh);
+authRouter.get("/refresh", authController.refresh);
 
 authRouter.get("/tokens", sessionController.getTokens);
 authRouter.delete("/clear-sessions", sessionController.clearAllSessions);

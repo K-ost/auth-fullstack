@@ -77,7 +77,7 @@ class AuthController {
   async logout(req: Request, res: Response) {
     try {
       const refreshToken = req.cookies["refreshToken"];
-      if (!refreshToken) return res.sendStatus(401);
+      if (!refreshToken) return res.status(401).send("No refresh token");
 
       await tokenService.deleteTokenFromDb(refreshToken);
 

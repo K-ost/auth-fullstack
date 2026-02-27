@@ -15,3 +15,7 @@ export type ErrorResponse = {
 };
 
 export type AuthResponse = { msg: string };
+export type LoginResponse = {
+  accessToken: string;
+  user: Pick<User, "id" | "email" | "name">;
+};
