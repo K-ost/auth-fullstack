@@ -1,12 +1,12 @@
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
-import TextInput from "../ui/TextInput";
-import Button from "../ui/Button";
+import { useMessage } from "../store/useMessage";
 import useMutateData from "../hooks/useMutateData";
+import Field from "../ui/Field";
+import Button from "../ui/Button";
+import Wrapper from "../ui/Wrapper";
 import { ApiUrl } from "../constants";
 import type { AuthResponse, ErrorResponse, User } from "../types";
-import Wrapper from "../ui/Wrapper";
-import { useMessage } from "../store/useMessage";
 
 type FormData = {
   email: string;
@@ -45,26 +45,28 @@ const LoginForm: FC = () => {
 
   return (
     <Wrapper title="Login">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <TextInput
-            type="email"
-            aria-label="E-mail"
-            placeholder="E-mail"
-            {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-            style={{ borderColor: errors.email ? "red" : "" }}
-          />
-        </div>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Field
+          type="email"
+          aria-label="E-mail"
+          placeholder="E-mail"
+          {...register("email", {
+            required: "Required field",
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: "Invalid e-mail",
+            },
+          })}
+          error={errors.email && errors.email.message}
+        />
 
-        <div className="mb-4">
-          <TextInput
-            type="password"
-            aria-label="Password"
-            placeholder="Password"
-            {...register("password", { required: true, minLength: 6 })}
-            style={{ borderColor: errors.password ? "red" : "" }}
-          />
-        </div>
+        <Field
+          type="password"
+          aria-label="Password"
+          placeholder="Password"
+          {...register("password", { required: "Required field", minLength: 6 })}
+          error={errors.password && errors.password.message}
+        />
 
         <Button type="submit" aria-label="Login button">
           {isPending ? "Loading..." : "Login"}

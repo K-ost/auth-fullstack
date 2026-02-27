@@ -1,12 +1,12 @@
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
-import Wrapper from "../ui/Wrapper";
-import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
-import type { AuthResponse, ErrorResponse, User } from "../types";
+import Field from "../ui/Field";
+import Wrapper from "../ui/Wrapper";
+import { useMessage } from "../store/useMessage";
 import useMutateData from "../hooks/useMutateData";
 import { ApiUrl } from "../constants";
-import { useMessage } from "../store/useMessage";
+import type { AuthResponse, ErrorResponse, User } from "../types";
 
 type FormData = Omit<User, "id">;
 
@@ -41,57 +41,64 @@ const RegisterForm: FC = () => {
 
   return (
     <Wrapper title="Register">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <TextInput
-            type="email"
-            aria-label="E-mail"
-            placeholder="E-mail"
-            {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-            style={{ borderColor: errors.email ? "red" : "" }}
-          />
-        </div>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Field
+          type="email"
+          aria-label="E-mail"
+          placeholder="E-mail"
+          {...register("email", {
+            required: "Required field",
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: "Invalid e-mail",
+            },
+          })}
+          error={errors.email && errors.email.message}
+        />
 
-        <div className="mb-4">
-          <TextInput
-            type="password"
-            aria-label="Password"
-            placeholder="Password"
-            {...register("password", { required: true, minLength: 6 })}
-            style={{ borderColor: errors.password ? "red" : "" }}
-          />
-        </div>
+        <Field
+          type="password"
+          aria-label="Password"
+          placeholder="Password"
+          {...register("password", {
+            required: "Should be at least 6 characters long",
+            minLength: 6,
+          })}
+          error={errors.password && errors.password.message}
+        />
 
-        <div className="mb-4">
-          <TextInput
-            type="password"
-            aria-label="Confirm Password"
-            placeholder="Confirm Password"
-            {...register("confirmPassword", {
-              required: true,
-              validate: (value) => value === watch("password"),
-            })}
-            style={{ borderColor: errors.confirmPassword ? "red" : "" }}
-          />
-        </div>
+        <Field
+          type="password"
+          aria-label="Confirm Password"
+          placeholder="Confirm Password"
+          {...register("confirmPassword", {
+            required: "Required field",
+            validate: (value) => {
+              return value === watch("password") || "Passwords don't match";
+            },
+          })}
+          error={errors.confirmPassword && errors.confirmPassword.message}
+        />
 
-        <div className="mb-4">
-          <TextInput
-            aria-label="Name"
-            placeholder="Name"
-            {...register("name", { required: true, minLength: 3 })}
-            style={{ borderColor: errors.name ? "red" : "" }}
-          />
-        </div>
+        <Field
+          aria-label="Name"
+          placeholder="Name"
+          {...register("name", {
+            required: "Should be at least 3 characters long",
+            minLength: 3,
+          })}
+          error={errors.name && errors.name.message}
+        />
 
-        <div className="mb-4">
-          <TextInput
-            aria-label="Surname"
-            placeholder="Surname"
-            {...register("surname", { required: true, minLength: 3 })}
-            style={{ borderColor: errors.surname ? "red" : "" }}
-          />
-        </div>
+        <Field
+          aria-label="Surname"
+          placeholder="Surname"
+          {...register("surname", {
+            required: "Should be at least 3 characters long",
+            minLength: 3,
+          })}
+          error={errors.surname && errors.surname.message}
+        />
 
         <Button type="submit" aria-label="Register button">
           {isPending ? "Loading..." : "Register"}
