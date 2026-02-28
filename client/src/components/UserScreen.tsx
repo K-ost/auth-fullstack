@@ -1,15 +1,14 @@
-import type { JSX } from "react";
+import { type JSX } from "react";
 import Button from "../ui/Button";
 import useMutateData from "../hooks/useMutateData";
 import { ApiUrl } from "../constants";
-import { useAuthStore, useAuthUser, useToken } from "../store/useAuth";
-import type { AuthResponse, ErrorResponse } from "../types";
-import useGetData from "../hooks/useGetData";
+import { useAuthStore, useAuthUser } from "../store/useAuth";
+import type { AuthResponse, ErrorResponse, UsersReponse } from "../types";
+import useUpdateRefresh from "../hooks/useUpdateRefresh";
 
 const UserScreen = (): JSX.Element => {
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthUser();
-  const accessToken = useToken();
 
   const { mutate, isPending } = useMutateData<AuthResponse, ErrorResponse, undefined>({
     keys: ["logout"],
@@ -17,10 +16,9 @@ const UserScreen = (): JSX.Element => {
     url: `${ApiUrl}/logout`,
   });
 
-  const { data } = useGetData({
+  const { data, isSuccess } = useUpdateRefresh<UsersReponse>({
     keys: ["users"],
     url: `${ApiUrl}/users`,
-    token: accessToken ?? undefined,
   });
 
   const logoutHandler = () => {
@@ -41,7 +39,8 @@ const UserScreen = (): JSX.Element => {
           <Button onClick={logoutHandler}>{isPending ? "Loading..." : "Logout"}</Button>
         </div>
       </div>
-      <pre className="text-sm">{JSON.stringify(data, null, 2)}</pre>
+
+      {isSuccess && <pre className="text-sm">{JSON.stringify(data, null, 2)}</pre>}
     </div>
   );
 };

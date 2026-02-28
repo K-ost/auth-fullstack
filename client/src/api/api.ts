@@ -5,8 +5,17 @@ export async function getData<T>(url: string, token?: string): Promise<T> {
     headers: {
       Authorization: token ? `Bearer ${token}` : "",
     },
+    credentials: "include",
   });
   const data = await response.json();
+
+  if (!response.ok) {
+    throw {
+      message: data.msg || "Request failed",
+      status: response.status,
+    } as ErrorResponse;
+  }
+
   return data;
 }
 

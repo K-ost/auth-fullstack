@@ -91,7 +91,7 @@ class AuthController {
   async refresh(req: Request, res: Response) {
     try {
       const refreshToken = req.cookies["refreshToken"];
-      if (!refreshToken) return res.sendStatus(401);
+      if (!refreshToken) return res.status(400).send({ msg: "No refresh token" });
 
       const sessionTokens = await db.query("SELECT * FROM tokens WHERE token = $1", [
         refreshToken,
@@ -117,7 +117,7 @@ class AuthController {
         });
         res.status(200).send({ accessToken, user: userDTO });
       } catch (error) {
-        res.status(401).send("Session expired");
+        res.status(401).send({ msg: "Session expired" });
       }
     } catch (error) {
       res.sendStatus(500);

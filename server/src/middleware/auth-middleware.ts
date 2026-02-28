@@ -8,13 +8,13 @@ interface AuthRequest extends Request {
 function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const authorization = req.headers.authorization;
-    if (!authorization) return res.sendStatus(401);
+    if (!authorization) return res.status(400).send({ msg: "No authorization" });
 
     const token = authorization.split(" ")[1];
-    if (!token) return res.sendStatus(401);
+    if (!token) return res.status(400).send({ msg: "No access token" });
 
     jwt.verify(token, process.env.ACCESS_TOKEN as string, (err, data) => {
-      if (err) return res.sendStatus(401);
+      if (err) return res.status(401).send({ msg: "Invalid access token" });
       req.user = data;
       next();
     });
