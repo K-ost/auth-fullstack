@@ -1,5 +1,15 @@
 import type { ErrorResponse, RestApiMethod } from "../types";
 
+export async function getData<T>(url: string, token?: string): Promise<T> {
+  const response = await fetch(url, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+
 export async function mutateData<T, K>(
   url: string,
   method: RestApiMethod,
@@ -8,7 +18,8 @@ export async function mutateData<T, K>(
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
     method,
-    body: JSON.stringify(body) ?? null,
+    body: body ? JSON.stringify(body) : undefined,
+    credentials: "include",
   });
   const data = await response.json();
 

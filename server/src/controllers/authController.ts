@@ -77,12 +77,12 @@ class AuthController {
   async logout(req: Request, res: Response) {
     try {
       const refreshToken = req.cookies["refreshToken"];
-      if (!refreshToken) return res.status(401).send("No refresh token");
+      if (!refreshToken) return res.status(401).send({ msg: "No refresh token" });
 
       await tokenService.deleteTokenFromDb(refreshToken);
 
       res.clearCookie("refreshToken", { httpOnly: true });
-      res.status(200).send("Logout");
+      res.status(200).send({ msg: "Logout" });
     } catch (error) {
       res.sendStatus(500);
     }

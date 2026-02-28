@@ -28,3 +28,4 @@ export const useAuthStore = create<IAuthStore>()(
 );
 
 export const useToken = () => useAuthStore((state) => state.accessToken);
+export const useAuthUser = () => useAuthStore((state) => state.user);
