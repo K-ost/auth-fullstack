@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore, useToken } from "../store/useAuth";
+import { useAuthStore } from "../store/useAuth";
 import useGetData from "./useGetData";
 import { ApiUrl } from "../constants";
 import type { LoginResponse } from "../types";
@@ -13,13 +13,11 @@ type UseUpdateRefreshProps = {
 const useUpdateRefresh = <T,>(props: UseUpdateRefreshProps) => {
   const { keys, url } = props;
   const login = useAuthStore((state) => state.login);
-  const accessToken = useToken();
   const queryClient = useQueryClient();
 
   const { data, isSuccess, isError } = useGetData<T>({
     keys: keys,
     url: url,
-    token: accessToken ?? undefined,
   });
 
   const { data: refreshData, isSuccess: isSuccessRefresh } = useGetData<LoginResponse>({
@@ -32,9 +30,9 @@ const useUpdateRefresh = <T,>(props: UseUpdateRefreshProps) => {
     if (!isSuccessRefresh) return;
     login(refreshData.accessToken, refreshData.user);
     queryClient.invalidateQueries({
-      queryKey: ["users"],
+      queryKey: keys,
     });
-  }, [isError, isSuccessRefresh, login, refreshData, queryClient]);
+  }, [isSuccessRefresh, login, refreshData, queryClient, keys]);
 
   return { data, isSuccess };
 };

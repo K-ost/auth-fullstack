@@ -17,11 +17,13 @@ export const useAuthStore = create<IAuthStore>()(
       (set) => ({
         accessToken: null,
         user: null,
-        login: (token, user) => set(() => ({ accessToken: token, user })),
-        logout: () => set(() => ({ accessToken: null, user: null })),
+        login: (token, user) =>
+          set(() => ({ accessToken: token, user }), false, "auth/login"),
+        logout: () =>
+          set(() => ({ accessToken: null, user: null }), false, "auth/logout"),
       }),
       {
-        name: "accessToken",
+        name: "auth-storage",
       },
     ),
   ),

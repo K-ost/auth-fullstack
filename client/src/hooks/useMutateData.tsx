@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { mutateData } from "../api/api";
+import { apiRequest } from "../api/api";
 import type { RestApiMethod } from "../types";
 
 type MutateProps = {
@@ -10,7 +10,7 @@ type MutateProps = {
 const useMutateData = <Data, Error, Vars>(props: MutateProps) => {
   const { keys, method, url } = props;
   return useMutation<Data, Error, Vars>({
-    mutationFn: (data) => mutateData<Data, Vars>(url, method, data),
+    mutationFn: (data) => apiRequest<Data, Vars>(url, method, data),
     mutationKey: keys,
     retry: false,
   });

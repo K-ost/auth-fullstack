@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getData } from "../api/api";
+import { apiRequest } from "../api/api";
 
 type UseGetDataProps = {
   keys: string[];
@@ -9,10 +9,10 @@ type UseGetDataProps = {
 };
 
 const useGetData = <T,>(props: UseGetDataProps) => {
-  const { enabled, keys, url, token } = props;
+  const { enabled, keys, url } = props;
   return useQuery({
     queryKey: keys,
-    queryFn: () => getData<T>(url, token),
+    queryFn: () => apiRequest<T, undefined>(url, "GET"),
     retry: false,
     enabled,
   });
