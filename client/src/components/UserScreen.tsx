@@ -5,7 +5,6 @@ import { ApiUrl } from "../constants";
 import { useAuthStore, useAuthUser } from "../store/useAuth";
 import type { AuthResponse, ErrorResponse, UsersReponse } from "../types";
 import useUpdateRefresh from "../hooks/useUpdateRefresh";
-import useGetData from "../hooks/useGetData";
 
 const requestKeys: string[] = ["users"];
 
@@ -19,12 +18,7 @@ const UserScreen = (): JSX.Element => {
     url: `${ApiUrl}/logout`,
   });
 
-  const { data, isSuccess, isError } = useGetData<UsersReponse>({
-    keys: requestKeys,
-    url: `${ApiUrl}/users`,
-  });
-
-  useUpdateRefresh({ isError, keys: requestKeys });
+  const { data, isSuccess } = useUpdateRefresh<UsersReponse>({ keys: requestKeys });
 
   const logoutHandler = () => {
     mutate(undefined, {

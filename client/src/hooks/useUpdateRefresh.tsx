@@ -6,28 +6,34 @@ import { ApiUrl } from "../constants";
 import type { LoginResponse } from "../types";
 
 type UseUpdateRefreshProps = {
-  isError: boolean;
   keys: string[];
 };
 
-const useUpdateRefresh = (props: UseUpdateRefreshProps) => {
-  const { isError, keys } = props;
+const useUpdateRefresh = <T,>(props: UseUpdateRefreshProps) => {
+  const { keys } = props;
   const login = useAuthStore((state) => state.login);
   const queryClient = useQueryClient();
 
-  const { data, isSuccess } = useGetData<LoginResponse>({
+  const { data, isSuccess, isError } = useGetData<T>({
+    keys,
+    url: `${ApiUrl}/users`,
+  });
+
+  const { data: refreshData, isSuccess: isSuccessRefresh } = useGetData<LoginResponse>({
     keys: ["refresh"],
     url: `${ApiUrl}/refresh`,
     enabled: isError,
   });
 
   useEffect(() => {
-    if (!isSuccess) return;
-    login(data.accessToken, data.user);
+    if (!isSuccessRefresh) return;
+    login(refreshData.accessToken, refreshData.user);
     queryClient.invalidateQueries({
       queryKey: keys,
     });
-  }, [data, isSuccess, login, queryClient, keys]);
+  }, [refreshData, isSuccessRefresh, login, queryClient, keys]);
+
+  return { data, isSuccess };
 };
 
 export default useUpdateRefresh;
