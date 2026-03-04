@@ -18,7 +18,10 @@ const UserScreen = (): JSX.Element => {
     url: `${ApiUrl}/logout`,
   });
 
-  const { data, isSuccess } = useUpdateRefresh<UsersReponse>({ keys: requestKeys });
+  const { data, isSuccess } = useUpdateRefresh<UsersReponse>({
+    keys: requestKeys,
+    url: `${ApiUrl}/users`,
+  });
 
   const logoutHandler = () => {
     mutate(undefined, {

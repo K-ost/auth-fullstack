@@ -7,22 +7,20 @@ import type { LoginResponse } from "../types";
 
 type UseUpdateRefreshProps = {
   keys: string[];
+  url: string;
 };
 
 const useUpdateRefresh = <T,>(props: UseUpdateRefreshProps) => {
-  const { keys } = props;
+  const { keys, url } = props;
   const login = useAuthStore((state) => state.login);
   const queryClient = useQueryClient();
 
-  const { data, isSuccess, isError } = useGetData<T>({
-    keys,
-    url: `${ApiUrl}/users`,
-  });
+  const { data, isSuccess, isError, error } = useGetData<T>({ keys, url });
 
   const { data: refreshData, isSuccess: isSuccessRefresh } = useGetData<LoginResponse>({
     keys: ["refresh"],
     url: `${ApiUrl}/refresh`,
-    enabled: isError,
+    enabled: isError && error.status === 401,
   });
 
   useEffect(() => {

@@ -14,7 +14,7 @@ interface ITokenService {
 class TokenService implements ITokenService {
   generateTokens<T extends object>(payload: T): TokensReturn {
     const accessToken = jwt.sign({ ...payload }, process.env.ACCESS_TOKEN as string, {
-      expiresIn: "1m",
+      expiresIn: "5m",
     });
 
     const refreshToken = jwt.sign({ ...payload }, process.env.REFRESH_TOKEN as string, {
