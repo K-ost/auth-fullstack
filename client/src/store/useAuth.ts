@@ -4,7 +4,7 @@ import type { User } from "../types";
 
 type AuthUser = Pick<User, "id" | "email" | "name">;
 
-interface IAuthStore {
+export interface IAuthStore {
   accessToken: string | null;
   user: AuthUser | null;
   login: (token: string, user: AuthUser) => void;
