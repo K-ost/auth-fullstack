@@ -1,16 +1,22 @@
-import { type FC } from "react";
+import { type JSX } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import Button from "../ui/Button";
 import Field from "../ui/Field";
 import Wrapper from "../ui/Wrapper";
 import { useMessage } from "../store/useMessage";
-import useMutateData from "../hooks/useMutateData";
 import { ApiUrl } from "../constants";
 import type { AuthResponse, ErrorResponse, User } from "../types";
+import type { ApiService } from "../api/api";
+
+type RegisterFormProps = {
+  service: ApiService<AuthResponse, FormData>;
+};
 
 type FormData = Omit<User, "id">;
 
-const RegisterForm: FC = () => {
+const RegisterForm = (props: RegisterFormProps): JSX.Element => {
+  const { service } = props;
   const setMessage = useMessage((state) => state.setMessage);
 
   const {
@@ -21,10 +27,9 @@ const RegisterForm: FC = () => {
     watch,
   } = useForm<FormData>();
 
-  const { mutate, isPending } = useMutateData<AuthResponse, ErrorResponse, FormData>({
-    keys: ["register"],
-    method: "POST",
-    url: `${ApiUrl}/register`,
+  const { mutate, isPending } = useMutation<AuthResponse, ErrorResponse, FormData>({
+    mutationKey: ["register"],
+    mutationFn: (data) => service(`${ApiUrl}/register`, "POST", data),
   });
 
   const onSubmit = (data: FormData) => {
@@ -61,8 +66,11 @@ const RegisterForm: FC = () => {
           aria-label="Password"
           placeholder="Password"
           {...register("password", {
-            required: "Should be at least 6 characters long",
-            minLength: 6,
+            required: "Required field",
+            minLength: {
+              value: 6,
+              message: "Should be at least 6 characters long",
+            },
           })}
           error={errors.password && errors.password.message}
         />

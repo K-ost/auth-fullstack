@@ -1,6 +1,12 @@
 import { useAuthStore } from "../store/useAuth";
 import type { ErrorResponse, RestApiMethod } from "../types";
 
+export type ApiService<T, K> = (
+  url: string,
+  method: RestApiMethod,
+  body?: K,
+) => Promise<T>;
+
 export async function apiRequest<T, K>(
   url: string,
   method: RestApiMethod = "GET",

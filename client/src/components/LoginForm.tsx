@@ -1,20 +1,26 @@
-import { type FC } from "react";
+import { type JSX } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { useMessage } from "../store/useMessage";
-import useMutateData from "../hooks/useMutateData";
 import { useAuthStore } from "../store/useAuth";
 import Field from "../ui/Field";
 import Button from "../ui/Button";
 import Wrapper from "../ui/Wrapper";
 import { ApiUrl } from "../constants";
-import type { LoginResponse, ErrorResponse, User } from "../types";
+import type { LoginResponse, ErrorResponse, LoginUser } from "../types";
+import type { ApiService } from "../api/api";
+
+type LoginFormProps = {
+  service: ApiService<LoginResponse, LoginUser>;
+};
 
 type FormData = {
   email: string;
   password: string;
 };
 
-const LoginForm: FC = () => {
+const LoginForm = (props: LoginFormProps): JSX.Element => {
+  const { service } = props;
   const setMessage = useMessage((state) => state.setMessage);
   const login = useAuthStore((state) => state.login);
 
@@ -24,14 +30,9 @@ const LoginForm: FC = () => {
     formState: { errors },
   } = useForm<FormData>();
 
-  const { mutate, isPending } = useMutateData<
-    LoginResponse,
-    ErrorResponse,
-    Pick<User, "email" | "password">
-  >({
-    keys: ["login"],
-    method: "POST",
-    url: `${ApiUrl}/login`,
+  const { mutate, isPending } = useMutation<LoginResponse, ErrorResponse, LoginUser>({
+    mutationKey: ["login"],
+    mutationFn: (data) => service(`${ApiUrl}/login`, "POST", data),
   });
 
   const onSubmit = (data: FormData) => {
@@ -66,7 +67,13 @@ const LoginForm: FC = () => {
           type="password"
           aria-label="Password"
           placeholder="Password"
-          {...register("password", { required: "Required field", minLength: 6 })}
+          {...register("password", {
+            required: "Required field",
+            minLength: {
+              value: 6,
+              message: "Should be at least 6 characters long",
+            },
+          })}
           error={errors.password && errors.password.message}
         />
 

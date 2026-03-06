@@ -8,6 +8,6 @@
 
 ### DB Operations
 
-1. `psql -U postgres;` - picking DB
+1. `psql postgres` - picking DB
 2. `\l` - all databases
 3. `\dt` - all tables

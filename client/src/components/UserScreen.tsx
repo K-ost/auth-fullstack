@@ -1,10 +1,11 @@
 import { type JSX } from "react";
 import Button from "../ui/Button";
-import useMutateData from "../hooks/useMutateData";
 import { ApiUrl } from "../constants";
 import { useAuthStore, useAuthUser } from "../store/useAuth";
 import type { AuthResponse, ErrorResponse, UsersReponse } from "../types";
 import useUpdateRefresh from "../hooks/useUpdateRefresh";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "../api/api";
 
 const requestKeys: string[] = ["users"];
 
@@ -12,10 +13,9 @@ const UserScreen = (): JSX.Element => {
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthUser();
 
-  const { mutate, isPending } = useMutateData<AuthResponse, ErrorResponse, undefined>({
-    keys: ["logout"],
-    method: "POST",
-    url: `${ApiUrl}/logout`,
+  const { mutate, isPending } = useMutation<AuthResponse, ErrorResponse, undefined>({
+    mutationKey: ["logout"],
+    mutationFn: () => apiRequest(`${ApiUrl}/logout`, "POST"),
   });
 
   const { data, isSuccess } = useUpdateRefresh<UsersReponse>({

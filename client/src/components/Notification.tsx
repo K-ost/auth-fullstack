@@ -1,10 +1,9 @@
 import { type FC } from "react";
+import { useMessageSelector } from "../store/useMessage";
 
-type NotificationProps = {
-  message: string;
-};
-
-const Notification: FC<NotificationProps> = ({ message }) => {
+const Notification: FC = () => {
+  const message = useMessageSelector();
+  if (!message) return null;
   return (
     <div
       aria-label={`Notification: ${message}`}
