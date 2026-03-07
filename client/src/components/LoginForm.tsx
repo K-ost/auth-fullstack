@@ -37,6 +37,7 @@ const LoginForm = (): JSX.Element => {
       },
       onSuccess(data) {
         login(data.accessToken, data.user);
+        setMessage("You have been logged");
       },
     });
   };
