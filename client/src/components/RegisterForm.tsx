@@ -7,16 +7,11 @@ import Wrapper from "../ui/Wrapper";
 import { useMessage } from "../store/useMessage";
 import { ApiUrl } from "../constants";
 import type { AuthResponse, ErrorResponse, User } from "../types";
-import type { ApiService } from "../api/api";
-
-type RegisterFormProps = {
-  service: ApiService<AuthResponse, FormData>;
-};
+import { apiRequest } from "../api/api";
 
 type FormData = Omit<User, "id">;
 
-const RegisterForm = (props: RegisterFormProps): JSX.Element => {
-  const { service } = props;
+const RegisterForm = (): JSX.Element => {
   const setMessage = useMessage((state) => state.setMessage);
 
   const {
@@ -29,7 +24,7 @@ const RegisterForm = (props: RegisterFormProps): JSX.Element => {
 
   const { mutate, isPending } = useMutation<AuthResponse, ErrorResponse, FormData>({
     mutationKey: ["register"],
-    mutationFn: (data) => service(`${ApiUrl}/register`, "POST", data),
+    mutationFn: (data) => apiRequest(`${ApiUrl}/register`, "POST", data),
   });
 
   const onSubmit = (data: FormData) => {

@@ -1,25 +1,29 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Wrapper } from "./testUtils";
 import LoginForm from "../components/LoginForm";
 import Notification from "../components/Notification";
-import type { ErrorResponse, LoginResponse } from "../types";
+import type { ErrorResponse } from "../types";
 
 const mockedError: ErrorResponse = { message: "User doesn't exist", status: 403 };
-const mockedSuccess: LoginResponse = {
-  accessToken: "token12345",
-  user: { email: "test@test.com", id: 1, name: "Test" },
-};
+
+const mockedFetch = vi.fn();
+globalThis.fetch = mockedFetch;
 
 describe("Login Form", () => {
   beforeEach(() => {
     render(
       <Wrapper>
-        <LoginForm service={() => Promise.reject(mockedError)} />
+        <LoginForm />
         <Notification />
       </Wrapper>,
     );
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup();
   });
 
   it("Invalid form errors", async () => {
@@ -36,6 +40,8 @@ describe("Login Form", () => {
   });
 
   it("Incorrect login error", async () => {
+    mockedFetch.mockRejectedValue(mockedError);
+
     const email = screen.getByRole("textbox", { name: "E-mail" });
     const pass = screen.getByLabelText("Password");
     const btn = screen.getByRole("button", { name: "Login button" });

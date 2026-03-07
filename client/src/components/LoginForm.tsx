@@ -8,19 +8,14 @@ import Button from "../ui/Button";
 import Wrapper from "../ui/Wrapper";
 import { ApiUrl } from "../constants";
 import type { LoginResponse, ErrorResponse, LoginUser } from "../types";
-import type { ApiService } from "../api/api";
-
-type LoginFormProps = {
-  service: ApiService<LoginResponse, LoginUser>;
-};
+import { apiRequest } from "../api/api";
 
 type FormData = {
   email: string;
   password: string;
 };
 
-const LoginForm = (props: LoginFormProps): JSX.Element => {
-  const { service } = props;
+const LoginForm = (): JSX.Element => {
   const setMessage = useMessage((state) => state.setMessage);
   const login = useAuthStore((state) => state.login);
 
@@ -32,7 +27,7 @@ const LoginForm = (props: LoginFormProps): JSX.Element => {
 
   const { mutate, isPending } = useMutation<LoginResponse, ErrorResponse, LoginUser>({
     mutationKey: ["login"],
-    mutationFn: (data) => service(`${ApiUrl}/login`, "POST", data),
+    mutationFn: (data) => apiRequest(`${ApiUrl}/login`, "POST", data),
   });
 
   const onSubmit = (data: FormData) => {
