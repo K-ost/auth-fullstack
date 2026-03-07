@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Wrapper from "./testWrapper";
@@ -31,7 +31,9 @@ function registerTestSetup() {
 describe("Register Form", () => {
   afterEach(() => {
     vi.clearAllMocks();
-    useMessage.setState({ message: "" });
+    act(() => {
+      useMessage.setState({ message: "" });
+    });
   });
 
   describe("Validation", () => {

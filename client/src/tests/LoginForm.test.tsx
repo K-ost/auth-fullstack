@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Wrapper from "./testWrapper";
@@ -19,8 +19,10 @@ const mockedResponse: LoginResponse = {
 };
 
 function loginTestSetup() {
-  useAuthStore.setState({ accessToken: null, user: null });
-  useMessage.setState({ message: "" });
+  act(() => {
+    useAuthStore.setState({ accessToken: null, user: null });
+    useMessage.setState({ message: "" });
+  });
 
   const loginSpy = vi.spyOn(useAuthStore.getState(), "login");
   const setMessageSpy = vi.spyOn(useMessage.getState(), "setMessage");
