@@ -31,6 +31,7 @@ function registerTestSetup() {
 describe("Register Form", () => {
   afterEach(() => {
     vi.clearAllMocks();
+    useMessage.setState({ message: "" });
   });
 
   describe("Validation", () => {
@@ -75,9 +76,30 @@ describe("Register Form", () => {
     await userEvent.click(btn);
 
     expect(await screen.findByText("User has been registered")).toBeInTheDocument();
+    expect(setMessageSpy).toHaveBeenCalledOnce();
     expect(email).toHaveValue("");
     expect(pass).toHaveValue("");
     expect(name).toHaveValue("");
+  });
+
+  it("Failed registration attempt - User already eixts", async () => {
+    const { btn, confirmPass, email, name, pass, surname, setMessageSpy } =
+      registerTestSetup();
+
+    mockedFetch.mockResolvedValue({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve({ msg: "User already exists" }),
+    });
+
+    await userEvent.type(email, "wrong@email.com");
+    await userEvent.type(pass, "123456");
+    await userEvent.type(confirmPass, "123456");
+    await userEvent.type(name, "User");
+    await userEvent.type(surname, "Test");
+    await userEvent.click(btn);
+
+    expect(await screen.findByText("User already exists")).toBeInTheDocument();
     expect(setMessageSpy).toHaveBeenCalledOnce();
   });
 });
