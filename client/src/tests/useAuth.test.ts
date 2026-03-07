@@ -1,7 +1,7 @@
 import { act, renderHook, type RenderHookResult } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { useAuthStore, type IAuthStore } from "../store/useAuth";
-import { Wrapper } from "./testUtils";
+import Wrapper from "./testWrapper";
 import type { User } from "../types";
 
 const mockedToken = "mock_access_token";

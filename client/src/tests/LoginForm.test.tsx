@@ -1,12 +1,13 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { Wrapper } from "./testUtils";
+import Wrapper from "./testWrapper";
 import LoginForm from "../components/LoginForm";
 import Notification from "../components/Notification";
 import type { LoginResponse } from "../types";
 import { useAuthStore } from "../store/useAuth";
 import { useMessage } from "../store/useMessage";
+import { mockedFetch } from "./setup";
 
 const mockedResponse: LoginResponse = {
   accessToken: "mocked_access_token",
@@ -16,9 +17,6 @@ const mockedResponse: LoginResponse = {
     name: "User",
   },
 };
-
-const mockedFetch = vi.fn();
-globalThis.fetch = mockedFetch;
 
 function loginTestSetup() {
   useAuthStore.setState({ accessToken: null, user: null });
