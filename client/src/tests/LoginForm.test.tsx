@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Wrapper } from "./testUtils";
 import LoginForm from "../components/LoginForm";
 import Notification from "../components/Notification";
@@ -20,33 +20,36 @@ const mockedResponse: LoginResponse = {
 const mockedFetch = vi.fn();
 globalThis.fetch = mockedFetch;
 
+function loginTestSetup() {
+  useAuthStore.setState({ accessToken: null, user: null });
+  useMessage.setState({ message: "" });
+
+  const loginSpy = vi.spyOn(useAuthStore.getState(), "login");
+  const setMessageSpy = vi.spyOn(useMessage.getState(), "setMessage");
+
+  render(
+    <Wrapper>
+      <LoginForm />
+      <Notification />
+    </Wrapper>,
+  );
+
+  return {
+    loginSpy,
+    setMessageSpy,
+    email: screen.getByRole("textbox", { name: "E-mail" }),
+    pass: screen.getByLabelText("Password"),
+    btn: screen.getByRole("button", { name: "Login button" }),
+  };
+}
+
 describe("Login Form", () => {
-  let loginSpy: ReturnType<typeof vi.spyOn>;
-  let setMessageSpy: ReturnType<typeof vi.spyOn>;
-
-  beforeEach(() => {
-    useAuthStore.setState({ accessToken: null, user: null });
-    useMessage.setState({ message: "" });
-
-    loginSpy = vi.spyOn(useAuthStore.getState(), "login");
-    setMessageSpy = vi.spyOn(useMessage.getState(), "setMessage");
-
-    render(
-      <Wrapper>
-        <LoginForm />
-        <Notification />
-      </Wrapper>,
-    );
-  });
-
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it("Invalid form errors", async () => {
-    const email = screen.getByRole("textbox", { name: "E-mail" });
-    const pass = screen.getByLabelText("Password");
-    const btn = screen.getByRole("button", { name: "Login button" });
+    const { btn, email, pass } = loginTestSetup();
 
     await userEvent.type(email, "test");
     await userEvent.type(pass, "111");
@@ -57,15 +60,13 @@ describe("Login Form", () => {
   });
 
   it("Incorrect login error", async () => {
+    const { btn, email, pass, setMessageSpy } = loginTestSetup();
+
     mockedFetch.mockResolvedValue({
       ok: false,
       status: 403,
       json: () => Promise.resolve({ msg: "User doesn't exist" }),
     });
-
-    const email = screen.getByRole("textbox", { name: "E-mail" });
-    const pass = screen.getByLabelText("Password");
-    const btn = screen.getByRole("button", { name: "Login button" });
 
     await userEvent.type(email, "unknown@test.com");
     await userEvent.type(pass, "111111");
@@ -78,17 +79,16 @@ describe("Login Form", () => {
   });
 
   it("Successful login", async () => {
+    const { btn, email, pass, loginSpy } = loginTestSetup();
+
     mockedFetch.mockResolvedValue({
       ok: true,
+      status: 201,
       json: async () => mockedResponse,
     });
 
-    const email = screen.getByRole("textbox", { name: "E-mail" });
-    const pass = screen.getByLabelText("Password");
-    const btn = screen.getByRole("button", { name: "Login button" });
-
     await userEvent.type(email, "test@test.com");
-    await userEvent.type(pass, "111111");
+    await userEvent.type(pass, "555555");
     await userEvent.click(btn);
 
     await waitFor(() => {
