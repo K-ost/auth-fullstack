@@ -81,7 +81,9 @@ describe("Register Form", () => {
     expect(setMessageSpy).toHaveBeenCalledOnce();
     expect(email).toHaveValue("");
     expect(pass).toHaveValue("");
+    expect(confirmPass).toHaveValue("");
     expect(name).toHaveValue("");
+    expect(surname).toHaveValue("");
   });
 
   it("Failed registration attempt - User already eixts", async () => {

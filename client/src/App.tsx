@@ -3,7 +3,6 @@ import Notification from "./components/Notification";
 import RegisterForm from "./components/RegisterForm";
 import { useToken } from "./store/useAuth";
 import UserScreen from "./components/UserScreen";
-import { apiRequest } from "./api/api";
 
 function App() {
   const accessToken = useToken();
@@ -12,8 +11,8 @@ function App() {
     <>
       {!accessToken && (
         <div className="mx-auto max-w-175 my-4 grid grid-cols-2 gap-6">
-          <LoginForm service={apiRequest} />
-          <RegisterForm service={apiRequest} />
+          <LoginForm />
+          <RegisterForm />
         </div>
       )}
       {accessToken && <UserScreen />}
