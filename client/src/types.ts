@@ -18,12 +18,14 @@ export type AuthResponse = { msg: string };
 
 export type LoginUser = Pick<User, "email" | "password">;
 
+export type FailResponse = { msg: string };
+
 export type LoginResponse = {
   accessToken: string;
   user: Pick<User, "id" | "email" | "name">;
 };
 
 export type UsersReponse = {
-  data: User[];
+  data: Omit<User, "password" | "confirmPassword">[];
   count: number;
 };
