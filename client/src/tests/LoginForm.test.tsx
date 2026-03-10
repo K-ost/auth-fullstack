@@ -4,19 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import Wrapper from "./testWrapper";
 import LoginForm from "../components/LoginForm";
 import Notification from "../components/Notification";
-import type { LoginResponse } from "../types";
 import { useAuthStore } from "../store/useAuth";
 import { useMessage } from "../store/useMessage";
 import { mockedFetch } from "./setup";
-
-const mockedResponse: LoginResponse = {
-  accessToken: "mocked_access_token",
-  user: {
-    email: "test@test.com",
-    id: 1,
-    name: "User",
-  },
-};
+import { mockedLoginResponse } from "./mocks";
 
 function loginTestSetup() {
   act(() => {
@@ -84,7 +75,7 @@ describe("Login Form", () => {
     mockedFetch.mockResolvedValue({
       ok: true,
       status: 201,
-      json: async () => mockedResponse,
+      json: async () => mockedLoginResponse,
     });
 
     await userEvent.type(email, "test@test.com");

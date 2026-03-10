@@ -3,23 +3,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import useUpdateRefresh from "../hooks/useUpdateRefresh";
 import TestWrapper from "./testWrapper";
 import { mockedFetch } from "./setup";
-import type { FailResponse, LoginResponse, UsersReponse } from "../types";
+import type { UsersReponse } from "../types";
 import { useAuthStore } from "../store/useAuth";
-
-const mockedUsers: UsersReponse = {
-  count: 2,
-  data: [
-    { email: "test1@test.com", id: 1, name: "John", surname: "Surname" },
-    { email: "test2@test.com", id: 2, name: "Steve", surname: "Surname" },
-  ],
-};
-
-const mockedFailResponse: FailResponse = { msg: "Token expired" };
-
-const mockedLoginResponse: LoginResponse = {
-  accessToken: "new_token",
-  user: { email: "test@test.com", id: 1, name: "User" },
-};
+import { mockedFailResponse, mockedLoginResponse, mockedUsers } from "./mocks";
 
 function setup() {
   const { result } = renderHook(
