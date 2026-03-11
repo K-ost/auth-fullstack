@@ -37,6 +37,10 @@ describe("User Screen", () => {
     const logoutBtn = screen.getByRole("button", { name: "Logout" });
     await userEvent.click(logoutBtn);
     expect(logoutSpy).toHaveBeenCalledTimes(1);
+    expect(mockedFetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/logout"),
+      expect.any(Object),
+    );
   });
 
   it("Protected data", async () => {
@@ -49,5 +53,9 @@ describe("User Screen", () => {
 
     expect(await screen.findByText(/"count": 2/)).toBeInTheDocument();
     expect(await screen.findByText(/"data": \[/)).toBeInTheDocument();
+    expect(mockedFetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/users"),
+      expect.any(Object),
+    );
   });
 });
