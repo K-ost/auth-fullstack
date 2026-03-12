@@ -12,8 +12,6 @@
     "start": "ts-node src/index.ts",
     "client": "cd ../client && npm run dev",
     "server": "nodemon src/index.ts",
-    "db": "brew services start postgresql",
-    "stop": "brew services stop postgresql",
     "dev": "concurrently \"nodemon src/index.ts\" \"npm run client\""
   },
   "dependencies": {
