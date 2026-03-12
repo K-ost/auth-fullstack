@@ -7,7 +7,7 @@ Only autorization with pair of tokens (access and refresh).
 ### Server side
 
 - Node.JS (Express), TypeScript
-- **DB:** PostgresQl
+- **DB:** PostgresQL
 - Express Validator
 
 ### Client side
